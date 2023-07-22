@@ -1,0 +1,32 @@
+name: After merge into main
+
+on:
+  push:
+    branches:  
+      - 'main'
+
+jobs:  
+  deploy_to_staging:
+    name: deploy
+    runs-on: self-hosted
+    environment: staging
+    steps:
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ github.actor }}
+          minimum-approvals: 1
+          exclude-workflow-initiator-as-approver: false
+      - name: Deploy to Staging
+        run: echo deploying
+
+  e2e_tests:
+    name: Full E2E test suite
+    runs-on: self-hosted
+    needs: [deploy_to_staging]
+    steps:
+      - uses: actions/checkout@v2
+      - name: E2E tests
+        run: |
+          echo "Running full e2e test suite"
+          echo "Smoke tests passed"

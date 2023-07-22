@@ -1,0 +1,27 @@
+name: Deploy main to Staging
+
+on:
+  workflow_dispatch:
+
+jobs:  
+  deploy_to_staging:
+    name: Deploy to staging
+    if: contains('refs/heads/main', github.ref)
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deployment to staging
+        run: |
+          echo "Deploying into staging"
+          echo "Deployment completed"
+
+  e2e_tests:
+    name: Full E2E test suite
+    runs-on: self-hosted
+    needs: [deploy_to_staging]
+    steps:
+      - uses: actions/checkout@v2
+      - name: E2E tests
+        run: |
+          echo "Running full e2e test suite"
+          echo "Smoke tests passed"

@@ -1,0 +1,59 @@
+name: Pull request workflow
+
+on:
+  pull_request:
+    branches:   
+      - 'main'
+
+jobs:
+  unit_tests:
+    name: Unit tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Unit tests
+        run: |
+          echo "Running unit tests"
+          echo "Unit tests passed"
+
+  integration_tests:
+    name: Integration tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Integration tests
+        run: |
+          echo "Running integration tests"
+          echo "Integration tests passed"
+          
+  sonarcloud_analysis:
+    name: Static code analysis using SonarCloud
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Static code analysis using SonarCloud
+        run: |
+          echo "Running code analysis using SonarCloud"
+          echo "Analysis passed"
+
+  deploy_to_ephemeral_environment:
+    name: Deploying code to an ephemeral environment
+    runs-on: self-hosted
+    needs: [unit_tests, integration_tests, sonarcloud_analysis]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploying code to an ephemeral environment - i.e. Vercel
+        run: |
+          echo "Deployment started"
+          echo "Deployment succesfull"
+
+  smoke_tests:
+    name: Smoke E2E tests
+    runs-on: self-hosted
+    needs: [deploy_to_ephemeral_environment]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Smoke E2E tests
+        run: |
+          echo "Running smoke e2e tests"
+          echo "Smoke tests passed"

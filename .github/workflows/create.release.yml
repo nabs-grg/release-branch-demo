@@ -1,0 +1,32 @@
+name: Create release branch and version tag
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_release_branch:
+    name: Create the release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        name: Checkout
+      - name: Create the release branch
+        shell: bash
+        id: get-latest-release-tag
+        run: |
+          TAG=v$(date +%Y.%m.%d.%H%M%S)
+          git checkout -b release/$TAG
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push release branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PAT }}
+          branch: release/${{ steps.get-latest-release-tag.outputs.tag }}
+      - uses: ./.github/actions/releases/create
+        name: Creating a release tag
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_RELEASE_TAG: ${{ steps.get-latest-release-tag.outputs.tag }}
+          COMMIT_SHA: ${{ github.sha }}

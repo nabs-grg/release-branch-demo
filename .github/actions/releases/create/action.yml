@@ -1,0 +1,32 @@
+name: Create a release
+description: Creates a new release
+
+inputs:
+  GITHUB_TOKEN:
+    required: true
+  NEW_RELEASE_TAG:
+    required: true
+  COMMIT_SHA:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get Latest release tag
+      shell: bash
+      id: get-latest-release-tag
+      run: |
+        TAG=$(gh release view --json tagName | jq -r .tagName) 
+        echo "LAST_RELEASE_TAG=$TAG" >>  $GITHUB_OUTPUT
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+    - name: Create Release
+      shell: bash
+      run: | 
+        gh release create ${{ inputs.NEW_RELEASE_TAG }} \
+          --notes-start-tag ${{ steps.get-latest-release-tag.outputs.LAST_RELEASE_TAG }} \
+          --target ${{ inputs.COMMIT_SHA }} \
+          --prerelease \
+          --generate-notes
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}

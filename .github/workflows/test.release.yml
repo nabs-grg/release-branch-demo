@@ -1,0 +1,68 @@
+name: Test release branch
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  deploy_to_staging:
+    name: Deploy to staging
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy to staging
+        run: |
+          echo "Deploying into staging"
+          echo "Deployment completed"
+
+  e2e_tests:
+    name: Full E2E test suite
+    runs-on: self-hosted
+    needs: [deploy_to_staging]
+    steps:
+      - uses: actions/checkout@v2
+      - name: E2E tests
+        run: |
+          echo "Running full e2e test"
+          echo "Smoke tests passed"
+
+  # manual_regression:
+  #   name: Manual regression 
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: trstringer/manual-approval@v1
+  #       with:
+  #         secret: ${{ github.TOKEN }}
+  #         approvers: ${{ github.actor }}
+  #         minimum-approvals: 1
+  #         exclude-workflow-initiator-as-approver: false
+  #     - name: Manual regression tests
+  #       run: echo "Regression has been successfully completed"
+
+  # deploy_to_production:
+  #   name: Deploy to production
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Deployment to production
+  #       run: |
+  #         echo "Deploying into production"
+  #         echo "Deployment completed"
+
+  # publish_release:
+  #   name: Publish the release
+  #   runs-on: ubuntu-latest
+  #   needs: [deploy_to_production]
+  #   steps:
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "tag=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/release/}}" >> $GITHUB_OUTPUT
+  #       id: extract-branch-name
+  #     - uses: actions/checkout@v3
+  #       name: Checkout
+  #     - uses: ./.github/actions/releases/update
+  #       name: Publishing the release tag
+  #       with:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         RELEASE_TAG: ${{ steps.extract-branch-name.outputs.tag }}
