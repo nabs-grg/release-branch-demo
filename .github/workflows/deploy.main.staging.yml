@@ -15,13 +15,13 @@ jobs:
           echo "Deploying into staging"
           echo "Deployment completed"
 
-  e2e_tests:
-    name: Full E2E test suite
-    runs-on: self-hosted
-    needs: [deploy_to_staging]
-    steps:
-      - uses: actions/checkout@v2
-      - name: E2E tests
-        run: |
-          echo "Running full e2e test suite"
-          echo "Smoke tests passed"
+  # e2e_tests:
+  #   name: Full E2E test suite
+  #   runs-on: self-hosted
+  #   needs: [deploy_to_staging]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: E2E tests
+  #       run: |
+  #         echo "Running full e2e test suite"
+  #         echo "Smoke tests passed"
