@@ -8,6 +8,7 @@ jobs:
     name: Deploy to staging
     if: contains('refs/heads/main', github.ref)
     runs-on: self-hosted
+    environment: Staging
     steps:
       - uses: actions/checkout@v2
       - name: Deployment to staging
